@@ -13,6 +13,12 @@
     -moz-osx-font-smoothing: grayscale;
 }
 
+#root {
+    height: 100dvh;
+    width: 100vw;
+    display: flex;
+}
+
 body {
     margin: 0;
     display: flex;

@@ -1,4 +1,4 @@
-import {storageUtils} from "../utils";
+import { storageUtils } from "../utils"
 
 enum ELocalStorageKey {
     TodoList = "todoList"
@@ -22,4 +22,4 @@ class LocalStorage extends Storage {
     }
 }
 
-export {LocalStorage, ELocalStorageKey}
+export { LocalStorage, ELocalStorageKey }

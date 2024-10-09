@@ -1,1 +1,1 @@
-export {LocalStorage, ELocalStorageKey} from './LocalStorage.ts'
+export { LocalStorage, ELocalStorageKey } from "./LocalStorage.ts"

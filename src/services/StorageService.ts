@@ -1,15 +1,15 @@
-import {LocalStorage, ELocalStorageKey} from "../storages";
+import { LocalStorage, ELocalStorageKey } from "../storages"
 
 type TStorage = Omit<Storage, "key">
 
 type EStorageKey = ELocalStorageKey
 
 enum EStorageServiceType {
-    Local,
+    Local
 }
 
 const storageMap: { [K in EStorageServiceType]: TStorage } = {
-    [EStorageServiceType.Local]: LocalStorage,
+    [EStorageServiceType.Local]: LocalStorage
 }
 
 class StorageService {
@@ -35,7 +35,5 @@ class StorageService {
         this.storage.clear()
     }
 }
-
-
 
 export { StorageService, EStorageServiceType }
