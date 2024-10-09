@@ -1,8 +1,8 @@
 enum EToDoListItemStatus {
-    New,
-    Completed,
-    InProgress,
-    Closed
+    New = "New",
+    Completed = "Completed",
+    InProgress = "InProgress",
+    Closed = "Closed"
 }
 
 interface ITodoListItem {
