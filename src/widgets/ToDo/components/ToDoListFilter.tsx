@@ -4,7 +4,7 @@ import classNames from "classnames"
 import { useTodoStore, type ITodoListStore } from "@/store"
 import { EToDoListItemStatus } from "../types.ts"
 import { filterLabelColorsMap, itemFilterLabelsMap, filterCheckboxClassNamesMap } from "../config.ts"
-import { useAnimations, EAnimationVariant } from "../hooks"
+import { useAnimations, type TUseAnimations, EAnimationVariant } from "../hooks"
 
 type TProps = {
     animationClass: string
@@ -15,7 +15,7 @@ type TProps = {
 const ListFilter: FC = ({  selectedFilters, handleFilterChange }: TProps): ReactElement => {
     const { todoList }: ITodoListStore = useTodoStore()
 
-    const {animationClass, triggerAnimation} = useAnimations()
+    const {animationClass, triggerAnimation}: TUseAnimations = useAnimations()
 
     useEffect(function () {
         return function ()  {

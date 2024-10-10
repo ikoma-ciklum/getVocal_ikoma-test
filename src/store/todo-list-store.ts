@@ -1,5 +1,4 @@
 import { create } from "zustand"
-import isEmpty from "lodash/isEmpty"
 import { type ITodoListItem, EToDoListItemStatus } from "@/widgets/ToDo/types.ts"
 import { StorageService } from "@/services"
 import { ELocalStorageKey } from "@/storages"
