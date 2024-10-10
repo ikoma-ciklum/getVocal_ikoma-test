@@ -22,16 +22,16 @@ const TAILWIND_ANIMATION_ENABLED: boolean = false
 const animationsMap = TAILWIND_ANIMATION_ENABLED
     ? {
           [EAnimationVariant.Appearance]: {
-              start: "opacity-0",
-              end: "opacity-100 transition-opacity transition-transform duration-300"
+              start: "opacity-0 -translate-y-2",
+              end: "opacity-100 translate-y-0 transition-opacity transition-transform duration-300"
           },
           [EAnimationVariant.Shaking]: {
               start: "transform scale-105 transition-transform duration-100 ease-in-out",
               end: "transform scale-100 transition-transform duration-100 ease-in-out"
           },
           [EAnimationVariant.Removal]: {
-              start: "opacity-100",
-              end: "opacity-0 transition-opacity transition-transform duration-300"
+              start: "opacity-100 translate-y-0",
+              end: "opacity-0 translate-y-2 transition-opacity transition-transform duration-300"
           }
       }
     : {
@@ -46,7 +46,7 @@ const pureCssAnimations: string = `
     .${EAnimationClassname.Shake} { transition: transform 0.1s ease-in-out; transform: scale(1.025); }
     .${EAnimationClassname.ShakeActive} { transition: transform 0.1s ease-in-out; transform: scale(1); }
     .${EAnimationClassname.Remove} { opacity: 1; transform: translateY(0); }
-    .${EAnimationClassname.RemoveActive} { opacity: 0; transform: translateY(10px); transition: opacity 200ms, transform 200ms; }
+    .${EAnimationClassname.RemoveActive} { opacity: 0; transform: translateY(10px); transition: opacity 300ms, transform 300ms; }
 `
 
 type TTriggerAnimationFunctionParams = { variant: EAnimationVariant; timeout?: number; cb?: TEmptyCallback }
