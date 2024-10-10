@@ -1,6 +1,7 @@
 import { type FC, type ReactElement } from "react"
+import classNames from "classnames"
 import { EToDoListItemStatus } from "../types.ts"
-import { itemFilterLabelsMap } from "../config.ts"
+import { filterLabelColorsMap, itemFilterLabelsMap, filterCheckboxClassNamesMap } from "../config.ts"
 
 type TProps = { selectedFilters: EToDoListItemStatus[]; handleFilterChange(f: EToDoListItemStatus): void }
 
@@ -11,11 +12,16 @@ const ListFilter: FC = ({ selectedFilters, handleFilterChange }: TProps): ReactE
                 <label key={`filter-${k}`} className="flex items-center mb-[6px]">
                     <input
                         type="checkbox"
-                        className="w-4 h-4 outline-teal-200 outline-1 outline text-teal-600 bg-white border-2 border-gray-300 rounded-md focus:ring-teal-500 focus:ring-1 checked:bg-teal-500 checked:border-none"
+                        className={classNames(
+                            "w-4 h-4 outline-transparent outline-1 outline bg-white border-2 border-gray-300 rounded-md focus:ring-1 checked:border-none",
+                            { [filterCheckboxClassNamesMap[k]]: k }
+                        )}
                         checked={selectedFilters.includes(k)}
                         onChange={() => handleFilterChange(k)}
                     />
-                    <span className="text-teal-500 text-sm select-none">&nbsp;{itemFilterLabelsMap[k]}</span>
+                    <span className={classNames("text-sm select-none", { [filterLabelColorsMap[k]]: k })}>
+                        &nbsp;{itemFilterLabelsMap[k]}
+                    </span>
                 </label>
             )
         )}

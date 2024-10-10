@@ -3,7 +3,7 @@ import classNames from "classnames"
 import isEmpty from "lodash/isEmpty"
 
 enum EMessageVariant {
-    Danger = 'Danger'
+    Danger = "Danger"
 }
 
 const variantsMap: { [K in EMessageVariant]: string } = {

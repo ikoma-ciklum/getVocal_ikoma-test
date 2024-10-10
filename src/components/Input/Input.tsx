@@ -1,19 +1,29 @@
-import { type FC, type ReactElement, type ChangeEvent } from "react"
+import { type FC, type ReactElement, type ChangeEvent, type KeyboardEvent } from "react"
 import classNames from "classnames"
 
 type TProps = {
     type?: string
     value?: string
     onChange?: (e?: ChangeEvent<HTMLInputElement>) => void
+    onKeyDown?: (e?: KeyboardEvent) => void
     onBlur?: () => void
     placeholder?: string
     className?: string
 }
 
-const Input: FC = ({ type = "text", value, onChange, onBlur, placeholder, className }: TProps): ReactElement => (
+const Input: FC = ({
+    type = "text",
+    value,
+    onChange,
+    onBlur,
+    onKeyDown,
+    placeholder,
+    className
+}: TProps): ReactElement => (
     <input
         type={type}
         value={value}
+        onKeyDown={onKeyDown}
         onChange={onChange}
         onBlur={onBlur}
         placeholder={placeholder}

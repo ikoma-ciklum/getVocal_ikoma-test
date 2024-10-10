@@ -1,5 +1,5 @@
 import { type FC, type ReactElement } from "react"
-import { LayoutMain } from "./layouts"
+import { LayoutMain } from "@/layouts"
 
 const App: FC = (): ReactElement => <LayoutMain />
 

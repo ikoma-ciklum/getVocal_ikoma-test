@@ -2,7 +2,7 @@ import { type FC, type ReactElement, type ReactNode } from "react"
 import classNames from "classnames"
 
 enum EButtonVariant {
-    Danger = 'Danger',
+    Danger = "Danger"
 }
 
 const variantsMap: { [K in EButtonVariant]: string } = {
@@ -20,8 +20,8 @@ type TProps = {
 const Button: FC = ({ variant = EButtonVariant.Danger, label, className, onClick, disabled }: TProps): ReactElement => (
     <button
         onClick={onClick}
-        className={classNames("text-white p-2 w-full outline-1 outline outline-black-100 rounded-md font-semibold", {
-            "!bg-gray-400 pointer-events-none": disabled,
+        className={classNames("text-white p-2 w-full outline-1 outline outline-transparent rounded-md font-semibold", {
+            "!bg-gray-400 pointer-events-none focus:outline-gray-500": disabled,
             [variantsMap[variant]]: variant,
             [className]: className
         })}>
