@@ -5,25 +5,17 @@ import {
     startTransition,
     useCallback,
     useDeferredValue,
-    useLayoutEffect,
     useState
 } from "react"
 import isEmpty from "lodash/isEmpty"
 import { ELocalStorageKey } from "@/storages"
 import { StorageService } from "@/services"
 import { type TEmptyCallback, emptyCallback } from "@/helpers"
+import { useTodoStore, type ITodoListStore } from "@/store"
 import { EToDoListItemStatus, type ITodoListItem } from "../../types.ts"
+import { useAnimations, type TUseAnimations, EAnimationVariant } from "../use-animations"
 
 const storageService: StorageService = new StorageService()
-
-enum EAnimationClassname {
-    TodoEnter = 'todo-enter',
-    TodoEnterActive = 'todo-enter-active',
-    TodoStatusChange = 'todo-status-change',
-    TodoStatusChangeActive = 'todo-status-change-active',
-    TodoExit = 'todo-exit',
-    TodoExitActive = 'todo-exit-active'
-}
 
 type TUseHook = {
     errorMessage: string
@@ -42,114 +34,96 @@ type TUseHook = {
 
 function useHook(): ReturnType<() => TUseHook> {
     // animations
-
-    const [animationClass, setAnimationClass]: [EAnimationClassname, Dispatch<SetStateAction<EAnimationClassname>>] = useState<EAnimationClassname>(String())
-
-    const triggerListItemAddAnimation: TEmptyCallback = useCallback(
-        (): void => (
-            setAnimationClass(EAnimationClassname.TodoEnter),
-            setTimeout(
-                (): void => (
-                    setAnimationClass(EAnimationClassname.TodoEnterActive), setTimeout((): void => setAnimationClass(String()), 200)
-                ),
-                100
-            )
-        ),
-        []
-    )
-
-    const triggerListItemClearAnimation: (onClear: TEmptyCallback) => void = useCallback(
-        (onClear: TEmptyCallback) => (
-            setAnimationClass(EAnimationClassname.TodoExit),
-            setTimeout((): void => (setAnimationClass(EAnimationClassname.TodoExitActive), setTimeout((): void => onClear(), 300)), 100)
-        ),
-        []
-    )
+    const { animationClass, triggerAnimation }: TUseAnimations = useAnimations()
 
     // input
+    const [inputValue, setInputValue]: [string, Dispatch<SetStateAction<string>>] = useState<string>()
 
-    const [errorMessage, setErrorMessage]: [string, Dispatch<SetStateAction<string>>] = useState<string>(String())
-
-    const [inputValue, setInputValue]: [string, Dispatch<SetStateAction<string>>] = useState<string>(String())
-
-    const handleInputChange = useCallback((event: UIEvent): void => {
-        setErrorMessage(String())
-        setInputValue(event.target.value)
-    }, [])
+    const handleInputChange = useCallback((event: UIEvent): void => setInputValue(event.target.value), [])
 
     // todos
-
-    const [todoList, setToDoList]: [ITodoListItem[], Dispatch<SetStateAction<ITodoListItem[]>>] = useState<
-        ITodoListItem[]
-    >(storageService.getItem(ELocalStorageKey.TodoList) || [])
+    const {
+        todoList,
+        removeAllTodos,
+        addTodo,
+        changeTodoStatus,
+        validationMessage: errorMessage,
+        setValidationMessage,
+        clearValidationMessage
+    }: ITodoListStore = useTodoStore(state => state)
 
     const deferredList: ITodoListItem[] = useDeferredValue(todoList)
 
-    useLayoutEffect(
-        (): void => (!isEmpty(todoList) && storageService.setItem(ELocalStorageKey.TodoList, todoList), void 0),
-        [todoList]
+    const handleAddTodoItem = useCallback(
+        function (): void {
+            if (inputValue?.trim() === "") {
+                setValidationMessage("Todo can't be empty")
+                setTimeout(() => setValidationMessage(''), 2000)
+            }
+            if (!isEmpty(todoList?.find(({ text }) => text === inputValue))) {
+                setValidationMessage("Todo already exists")
+                setTimeout(() => setValidationMessage(''), 2000)
+            } else {
+                triggerAnimation({
+                    variant: EAnimationVariant.Appearance,
+                    cb: function (): void {
+                        startTransition(function (): void {
+                            addTodo(inputValue)
+                            setInputValue(String())
+                            clearValidationMessage()
+                        })
+                    },
+                    timeout: 200
+                })
+            }
+        },
+        [todoList, errorMessage, inputValue, triggerAnimation]
     )
-
-    const handleAddTodoItem = useCallback((): void => {
-        if (isEmpty(inputValue)) {
-            return
-        }
-
-        if (!!todoList?.find((t: ITodoListItem) => t.text === inputValue)) {
-            setErrorMessage("This todo has been already added")
-            return
-        }
-
-        const newTodo: ITodoListItem = { status: EToDoListItemStatus.New, text: inputValue }
-
-        startTransition(
-            () => (
-                setToDoList(prevTodos => (!isEmpty(prevTodos) ? [...prevTodos, newTodo] : [newTodo])),
-                setInputValue(String()),
-                triggerListItemAddAnimation()
-            )
-        )
-    }, [todoList, inputValue, triggerListItemAddAnimation])
 
     const handleInputBlur: TEmptyCallback = handleAddTodoItem
 
     const handleInputOnKeyDown: (event: KeyboardEvent) => void = useCallback(
-        (event: KeyboardEvent): void => (event.key === "Enter" ? handleAddTodoItem() : emptyCallback()),
+        function (event: KeyboardEvent): TEmptyCallback {
+            event.key === "Enter" ? handleAddTodoItem() : emptyCallback()
+        },
         [handleAddTodoItem]
     )
 
     const handleRemoveAllTodos = useCallback(
-        (): void =>
-            triggerListItemClearAnimation((): void =>
-                startTransition((): void => (storageService.clearStorage(), setToDoList([])))
-            ),
-        [triggerListItemClearAnimation]
+        function (): void {
+            triggerAnimation({
+                variant: EAnimationVariant.Removal,
+                cb: function (): void {
+                    startTransition(function (): void {
+                        removeAllTodos()
+                    })
+                },
+                timeout: 200
+            })
+        },
+        [triggerAnimation]
     )
 
     const shouldClearButtonBeDisabled: boolean = isEmpty(deferredList)
 
-    const handleListItemStatusChange = useCallback((event: UIEvent): void => {
+    const handleListItemStatusChange: (event: UIEvent) => void = useCallback(function (event: UIEvent): void {
         const { dataset } = event.target
         const { index, status } = dataset
 
-        if (index !== undefined && status) {
-            setToDoList((prevTodos): void =>
-                prevTodos.map((todo, todoIndex) =>
-                    todoIndex === Number(index)
-                        ? (setAnimationClass(EAnimationClassname.TodoStatusChange),
-                          setTimeout((): void =>  setAnimationClass(EAnimationClassname.TodoStatusChangeActive), 200),
-                          {
-                              ...todo,
-                              status: todo.status === status ? EToDoListItemStatus.New : status
-                          })
-                        : todo
-                )
-            )
-        }
+        index !== undefined && status
+            ? triggerAnimation({
+                  variant: EAnimationVariant.Shaking,
+                  cb: function (): void {
+                      startTransition(function (): void {
+                          changeTodoStatus({ index, status })
+                      })
+                  },
+                  timeout: 200
+              })
+            : emptyCallback()
     }, [])
 
     // filters
-
     const [selectedFilters, setSelectedFilters]: [
         [EToDoListItemStatus],
         Dispatch<SetStateAction<[EToDoListItemStatus]>>
@@ -162,13 +136,19 @@ function useHook(): ReturnType<() => TUseHook> {
     )
 
     const handleFilterChange = useCallback(
-        (status: EToDoListItemStatus): void =>
-            triggerListItemAddAnimation(selectedFilters.includes(status)
-                ? setSelectedFilters((prev: [EToDoListItemStatus]): [EToDoListItemStatus] =>
-                    prev.filter(s => s !== status)
-                )
-                : setSelectedFilters((prev: [EToDoListItemStatus]): [EToDoListItemStatus] => [...prev, status])),
-        [selectedFilters]
+        function (status: EToDoListItemStatus): void {
+            triggerAnimation({
+                variant: EAnimationVariant.Appearance,
+                cb: () =>
+                    selectedFilters.includes(status)
+                        ? setSelectedFilters((prev: [EToDoListItemStatus]): [EToDoListItemStatus] =>
+                              prev?.filter(s => s !== status)
+                          )
+                        : setSelectedFilters((prev: [EToDoListItemStatus]): [EToDoListItemStatus] => [...prev, status]),
+                timeout: 200
+            })
+        },
+        [selectedFilters, triggerAnimation]
     )
 
     return {

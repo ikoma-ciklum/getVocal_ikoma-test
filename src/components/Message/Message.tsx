@@ -4,7 +4,7 @@ import isEmpty from "lodash/isEmpty"
 
 enum EMessageVariant {
     Danger = "Danger",
-    Info = 'Info'
+    Info = "Info"
 }
 
 const variantsMap: { [K in EMessageVariant]: string } = {

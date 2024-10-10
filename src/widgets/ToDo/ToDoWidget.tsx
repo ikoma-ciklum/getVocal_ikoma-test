@@ -4,7 +4,7 @@ import { ToDoList as List } from "./components/ToDoList.tsx"
 import { ToDoListFilter as Filter } from "./components"
 import { useToDoList, type TUseToDoList } from "./hooks"
 
-import './animations.css'
+// import "./animations.css"
 
 const Widget: FC = (): ReactElement => {
     const {

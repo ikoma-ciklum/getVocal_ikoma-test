@@ -9,6 +9,7 @@ type TProps = {
     onBlur?: () => void
     placeholder?: string
     className?: string
+    autoFocus?: boolean
 }
 
 const Input: FC = ({
@@ -18,7 +19,7 @@ const Input: FC = ({
     onBlur,
     onKeyDown,
     placeholder,
-    className
+    className,
 }: TProps): ReactElement => (
     <input
         type={type}
