@@ -58,11 +58,11 @@ function useHook(): ReturnType<() => TUseHook> {
         function (): void {
             if (inputValue?.trim() === "") {
                 setValidationMessage("Todo can't be empty")
-                setTimeout(() => setValidationMessage(''), 2000)
+                setTimeout(() => setValidationMessage(""), 2000)
             }
             if (!isEmpty(todoList?.find(({ text }) => text === inputValue))) {
                 setValidationMessage("Todo already exists")
-                setTimeout(() => setValidationMessage(''), 2000)
+                setTimeout(() => setValidationMessage(""), 2000)
             } else {
                 triggerAnimation({
                     variant: EAnimationVariant.Appearance,

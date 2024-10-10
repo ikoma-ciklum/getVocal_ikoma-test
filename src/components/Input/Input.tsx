@@ -19,7 +19,7 @@ const Input: FC = ({
     onBlur,
     onKeyDown,
     placeholder,
-    className,
+    className
 }: TProps): ReactElement => (
     <input
         type={type}

@@ -1,5 +1,5 @@
 import type { Dispatch, SetStateAction } from "react"
-import { useCallback, useInsertionEffect, useState } from "react"
+import { useCallback, useState, useInsertionEffect } from "react"
 import { type TEmptyCallback, emptyCallback } from "@/helpers"
 
 enum EAnimationVariant {
@@ -17,13 +17,30 @@ enum EAnimationClassname {
     RemoveActive = "remove-active"
 }
 
-const animationsMap = {
-    [EAnimationVariant.Appearance]: { start: EAnimationClassname.Appear, end: EAnimationClassname.AppearActive },
-    [EAnimationVariant.Shaking]: { start: EAnimationClassname.Shake, end: EAnimationClassname.ShakeActive },
-    [EAnimationVariant.Removal]: { start: EAnimationClassname.Remove, end: EAnimationClassname.RemoveActive }
-}
+const TAILWIND_ANIMATION_ENABLED: boolean = false
 
-const animationsCss: string = `
+const animationsMap = TAILWIND_ANIMATION_ENABLED
+    ? {
+          [EAnimationVariant.Appearance]: {
+              start: "opacity-0",
+              end: "opacity-100 transition-opacity transition-transform duration-300"
+          },
+          [EAnimationVariant.Shaking]: {
+              start: "transform scale-105 transition-transform duration-100 ease-in-out",
+              end: "transform scale-100 transition-transform duration-100 ease-in-out"
+          },
+          [EAnimationVariant.Removal]: {
+              start: "opacity-100",
+              end: "opacity-0 transition-opacity transition-transform duration-300"
+          }
+      }
+    : {
+          [EAnimationVariant.Appearance]: { start: EAnimationClassname.Appear, end: EAnimationClassname.AppearActive },
+          [EAnimationVariant.Shaking]: { start: EAnimationClassname.Shake, end: EAnimationClassname.ShakeActive },
+          [EAnimationVariant.Removal]: { start: EAnimationClassname.Remove, end: EAnimationClassname.RemoveActive }
+      }
+
+const pureCssAnimations: string = `
     .${EAnimationClassname.Appear} { opacity: 0; transform: translateY(-10px); }
     .${EAnimationClassname.AppearActive} { opacity: 1; transform: translateY(0); transition: opacity 300ms, transform 300ms; }
     .${EAnimationClassname.Shake} { transition: transform 0.1s ease-in-out; transform: scale(1.025); }
@@ -52,8 +69,10 @@ function useHook(): ReturnType<() => TUseHook> {
         useState<EAnimationClassname>(String())
 
     useInsertionEffect(function (): TEmptyCallback {
+        if (TAILWIND_ANIMATION_ENABLED) return emptyCallback()
+
         const style = document.createElement("style")
-        style.textContent = animationsCss
+        style.textContent = pureCssAnimations
         document.head.appendChild(style)
 
         return (): void => document.head.removeChild(style)
@@ -74,9 +93,4 @@ function useHook(): ReturnType<() => TUseHook> {
     return { animationClass, triggerAnimation }
 }
 
-export {
-    useHook as useAnimations,
-    type TUseHook as TUseAnimations,
-    type TTriggerAnimationFunction,
-    EAnimationVariant
-}
+export { useHook as useAnimations, type TUseHook as TUseAnimations, type TTriggerAnimationFunction, EAnimationVariant }

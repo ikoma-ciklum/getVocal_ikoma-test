@@ -1,4 +1,4 @@
-import {type FC, type ReactElement, useEffect} from "react"
+import { type FC, type ReactElement, useEffect } from "react"
 import isEmpty from "lodash/isEmpty"
 import classNames from "classnames"
 import { useTodoStore, type ITodoListStore } from "@/store"
@@ -12,16 +12,19 @@ type TProps = {
     handleFilterChange(f: EToDoListItemStatus): void
 }
 
-const ListFilter: FC = ({  selectedFilters, handleFilterChange }: TProps): ReactElement => {
+const ListFilter: FC = ({ selectedFilters, handleFilterChange }: TProps): ReactElement => {
     const { todoList }: ITodoListStore = useTodoStore()
 
-    const {animationClass, triggerAnimation}: TUseAnimations = useAnimations()
+    const { animationClass, triggerAnimation }: TUseAnimations = useAnimations()
 
-    useEffect(function () {
-        return function ()  {
-            isEmpty(todoList) && triggerAnimation({variant: EAnimationVariant.Appearance, timeout: 200})
-        }
-    }, [todoList])
+    useEffect(
+        function () {
+            return function () {
+                isEmpty(todoList) && triggerAnimation({ variant: EAnimationVariant.Appearance, timeout: 200 })
+            }
+        },
+        [todoList]
+    )
 
     return (
         <div
