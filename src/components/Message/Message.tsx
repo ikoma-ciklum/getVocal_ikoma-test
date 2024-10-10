@@ -3,11 +3,13 @@ import classNames from "classnames"
 import isEmpty from "lodash/isEmpty"
 
 enum EMessageVariant {
-    Danger = "Danger"
+    Danger = "Danger",
+    Info = 'Info'
 }
 
 const variantsMap: { [K in EMessageVariant]: string } = {
-    [EMessageVariant.Danger]: "text-red-400 bg-red-100 border-1 rounded-md"
+    [EMessageVariant.Danger]: "text-red-400 bg-red-100",
+    [EMessageVariant.Info]: "text-sky-400 bg-sky-100"
 }
 
 const Message: FC = ({
@@ -18,7 +20,7 @@ const Message: FC = ({
     variant?: EMessageVariant
 }): ReactElement => (
     <p
-        className={classNames("text-sm w-fit mt-1 p-1", {
+        className={classNames("text-sm w-fit mt-1 p-1 border-1 rounded-md", {
             hidden: isEmpty(message),
             [variantsMap[variant]]: variant
         })}>

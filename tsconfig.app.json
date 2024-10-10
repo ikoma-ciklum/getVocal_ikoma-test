@@ -1,7 +1,7 @@
 {
     "compilerOptions": {
         "target": "ES2020",
-        "baseUrl": "./",
+        "baseUrl": "./src",
         "useDefineForClassFields": true,
         "lib": ["ES2020", "DOM", "DOM.Iterable"],
         "module": "ESNext",
@@ -10,7 +10,7 @@
         "types": ["jest", "node"],
         "typeRoots": ["node_modules/@types"],
         "paths": {
-            "$": ["src/*"]
+            "@/&": ["*"]
         },
 
         /* Bundler mode */

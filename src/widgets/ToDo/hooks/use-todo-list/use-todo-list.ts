@@ -13,9 +13,17 @@ import { ELocalStorageKey } from "@/storages"
 import { StorageService } from "@/services"
 import { type TEmptyCallback, emptyCallback } from "@/helpers"
 import { EToDoListItemStatus, type ITodoListItem } from "../../types.ts"
-import "./animations.css"
 
 const storageService: StorageService = new StorageService()
+
+enum EAnimationClassname {
+    TodoEnter = 'todo-enter',
+    TodoEnterActive = 'todo-enter-active',
+    TodoStatusChange = 'todo-status-change',
+    TodoStatusChangeActive = 'todo-status-change-active',
+    TodoExit = 'todo-exit',
+    TodoExitActive = 'todo-exit-active'
+}
 
 type TUseHook = {
     errorMessage: string
@@ -35,14 +43,14 @@ type TUseHook = {
 function useHook(): ReturnType<() => TUseHook> {
     // animations
 
-    const [animationClass, setAnimationClass]: [string, Dispatch<SetStateAction<string>>] = useState(String())
+    const [animationClass, setAnimationClass]: [EAnimationClassname, Dispatch<SetStateAction<EAnimationClassname>>] = useState<EAnimationClassname>(String())
 
     const triggerListItemAddAnimation: TEmptyCallback = useCallback(
         (): void => (
-            setAnimationClass("todo-enter"),
+            setAnimationClass(EAnimationClassname.TodoEnter),
             setTimeout(
                 (): void => (
-                    setAnimationClass("todo-enter-active"), setTimeout((): void => setAnimationClass(String()), 200)
+                    setAnimationClass(EAnimationClassname.TodoEnterActive), setTimeout((): void => setAnimationClass(String()), 200)
                 ),
                 100
             )
@@ -52,8 +60,8 @@ function useHook(): ReturnType<() => TUseHook> {
 
     const triggerListItemClearAnimation: (onClear: TEmptyCallback) => void = useCallback(
         (onClear: TEmptyCallback) => (
-            setAnimationClass("todo-exit"),
-            setTimeout((): void => (setAnimationClass("todo-exit-active"), setTimeout((): void => onClear(), 300)), 100)
+            setAnimationClass(EAnimationClassname.TodoExit),
+            setTimeout((): void => (setAnimationClass(EAnimationClassname.TodoExitActive), setTimeout((): void => onClear(), 300)), 100)
         ),
         []
     )
@@ -112,7 +120,7 @@ function useHook(): ReturnType<() => TUseHook> {
 
     const handleRemoveAllTodos = useCallback(
         (): void =>
-            triggerListItemClearAnimation(() =>
+            triggerListItemClearAnimation((): void =>
                 startTransition((): void => (storageService.clearStorage(), setToDoList([])))
             ),
         [triggerListItemClearAnimation]
@@ -128,10 +136,8 @@ function useHook(): ReturnType<() => TUseHook> {
             setToDoList((prevTodos): void =>
                 prevTodos.map((todo, todoIndex) =>
                     todoIndex === Number(index)
-                        ? (setAnimationClass("todo-status-change"),
-                          setTimeout(() => {
-                              setAnimationClass("todo-status-change-active")
-                          }, 200),
+                        ? (setAnimationClass(EAnimationClassname.TodoStatusChange),
+                          setTimeout((): void =>  setAnimationClass(EAnimationClassname.TodoStatusChangeActive), 200),
                           {
                               ...todo,
                               status: todo.status === status ? EToDoListItemStatus.New : status
@@ -157,11 +163,11 @@ function useHook(): ReturnType<() => TUseHook> {
 
     const handleFilterChange = useCallback(
         (status: EToDoListItemStatus): void =>
-            selectedFilters.includes(status)
+            triggerListItemAddAnimation(selectedFilters.includes(status)
                 ? setSelectedFilters((prev: [EToDoListItemStatus]): [EToDoListItemStatus] =>
-                      prev.filter(s => s !== status)
-                  )
-                : setSelectedFilters((prev: [EToDoListItemStatus]): [EToDoListItemStatus] => [...prev, status]),
+                    prev.filter(s => s !== status)
+                )
+                : setSelectedFilters((prev: [EToDoListItemStatus]): [EToDoListItemStatus] => [...prev, status])),
         [selectedFilters]
     )
 

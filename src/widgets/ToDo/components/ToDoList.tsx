@@ -1,6 +1,7 @@
 import { type FunctionComponent, type ReactElement } from "react"
 import isEmpty from "lodash/isEmpty"
 import classNames from "classnames"
+import {Message, EMessageVariant} from "@/components";
 import type { ITodoListItem } from "../types.ts"
 import { ToDoListItem as ListItem } from "./"
 
@@ -19,7 +20,7 @@ const List: FunctionComponent = ({ itemList, handleClick }: TProps): ReactElemen
             ? itemList.map((todo: ITodoListItem, idx: number) => (
                   <ListItem key={`todo-number-${idx}`} text={todo.text} status={todo.status} index={idx} />
               ))
-            : null}
+            : <li><Message message="No todos for this filter" variant={EMessageVariant.Info}/></li>}
     </ul>
 )
 
