@@ -52,8 +52,8 @@ const pureCssAnimations: string = `
 type TTriggerAnimationFunctionParams = { variant: EAnimationVariant; timeout?: number; cb?: TEmptyCallback }
 type TTriggerAnimationFunction = ({
     variant,
-    timeout = 200,
-    cb = emptyCallback
+    timeout,
+    cb
 }: TTriggerAnimationFunctionParams) => void
 
 type TUseHook = {
